@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-// Import your controllers
+//controllers
 
 const coursesController = require('../controllers/courses');
 const usersController = require('../controllers/users');
 
-// Define your API routes
+//  API routes
 router.get('/courses', coursesController.getAllCourses);
  router.get('/courses/:id', coursesController.getCourseById);
 router.post('/courses', coursesController.createCourse);

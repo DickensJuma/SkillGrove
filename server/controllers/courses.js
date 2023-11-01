@@ -1,3 +1,4 @@
+const { default: KafkaConfig } = require('../config/kafka');
 const Course = require('../models/Course');
 
 
@@ -116,3 +117,22 @@ exports.updateCourse = (req, res) => {
         res.status(500).json({ success: false, message: 'Error deleting course', error: error.message });
       });
   };
+
+
+ 
+
+exports.sendMessageToKafka = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const kafkaConfig = new KafkaConfig();
+    const messages = [{ key: "key1", value: message }];
+    kafkaConfig.produce("my-course-topic", messages);
+
+    res.status(200).json({
+      status: "Ok!",
+      message: "Message successfully send!",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

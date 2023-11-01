@@ -2,13 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const dotenv = require('dotenv'); // for loading environment variables from a .env file
+const dotenv = require('dotenv'); 
 
 
-dotenv.config(); // Load environment variables from a .env file (make sure to create one)
+dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 6000; // Use the provided PORT or default to 3000
+const port = process.env.PORT || 6000; 
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Connect to the MongoDB database
-const dbUrl = process.env.MONGO_URL; // Use the MongoDB URI from your .env file
+const dbUrl = process.env.MONGO_URL; // Use the MongoDB URI from .env file
 mongoose
   .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -26,9 +26,15 @@ mongoose
     console.error('MongoDB connection error:', err);
   });
 
-// Define your routes
+// Define routes
 const apiRoutes = require('./routes/api');
+const KafkaConfig = require('./config/kafka');
 app.use('/api', apiRoutes);
+
+const kafkaConfig = new KafkaConfig();
+// kafkaConfig.consume("my-course-topic", (value) => {
+//   console.log("📨 Receive message: ", value);
+// });
 
 // Start the server
 app.listen(port, () => {

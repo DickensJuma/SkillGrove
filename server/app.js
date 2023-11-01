@@ -7,11 +7,11 @@ const apiRoutes = require('./routes/api');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Import and use your middleware
+// Import and use middleware
 const authenticationMiddleware = require('./middleware/authentication');
 app.use(authenticationMiddleware);
 
-// Set up your routes
+// Set up routes
 const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
