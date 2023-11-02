@@ -6,7 +6,9 @@ const bcrypt = require('bcrypt');
 
 // User registration
 exports.registerUser = (req, res) => {
-  const { username, email, password } = req.body;
+  console.log("req", req);
+  const { username, email, password , profile} = req.body;
+  if(!profile){
 
   // Check if the username or email is already in use
   User.findOne({ $or: [{ username }, { email }] })
@@ -37,6 +39,11 @@ exports.registerUser = (req, res) => {
     .catch((error) => {
       res.status(500).json({ success: false, message: 'User check failed', error: error.message });
     });
+  }
+  // create google user
+  return res.json({ success: true, message: 'User registered', profile });
+
+
 };
 
 // User login
@@ -102,6 +109,7 @@ exports.getUserById = (req, res) => {
 // Create a new user
 
 exports.createUser = (req, res) => {
+ 
   const { username, email, password, firstName, lastName } = req.body;
 
   // Check if the username or email is already in use
@@ -176,3 +184,4 @@ exports.deleteUser = (req, res) => {
       res.status(500).json({ success: false, message: 'Error deleting user', error: error.message });
     });
 };
+

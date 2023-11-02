@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 
 //controllers
 
@@ -13,14 +14,22 @@ router.post('/courses', coursesController.createCourse);
 router.put('/courses/:id', coursesController.updateCourse);
  router.delete('/courses/:id', coursesController.deleteCourse);
 
-router.get('/users', usersController.getAllUsers);
- router.get('/users/:id', usersController.getUserById);
-router.post('/users', usersController.createUser);
-router.put('/users/:id', usersController.updateUser);
-router.delete('/users/:id', usersController.deleteUser);
 
-// User registration route
-router.post('/register', usersController.registerUser);
+ router.get('/users', usersController.getAllUsers);
+ router.get('/users/:id', usersController.getUserById);
+ router.post('/users', usersController.createUser);
+ router.put('/users/:id', usersController.updateUser);
+ router.delete('/users/:id', usersController.deleteUser);
+ 
+ // User registration route
+ router.post('/register', usersController.registerUser);
+ router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+ router.get('/auth/google/callback', (req, res) => {
+    
+    res.redirect('/home');
+    }
+    );
+
 
 // User login route
 router.post('/login', usersController.loginUser);
