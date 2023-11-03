@@ -6,11 +6,12 @@ const passport = require('passport');
 
 const coursesController = require('../controllers/courses');
 const usersController = require('../controllers/users');
+const { verifyUser, requireAuthentication } = require('../middleware/auth');
 
 //  API routes
 router.get('/courses', coursesController.getAllCourses);
  router.get('/courses/:id', coursesController.getCourseById);
-router.post('/courses', coursesController.createCourse);
+router.post('/courses', requireAuthentication,coursesController.createCourse);
 router.put('/courses/:id', coursesController.updateCourse);
  router.delete('/courses/:id', coursesController.deleteCourse);
 
@@ -26,12 +27,12 @@ router.put('/courses/:id', coursesController.updateCourse);
  router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
  router.get('/auth/google/callback', (req, res) => {
     
-    res.redirect('/home');
+    res.redirect('/');
     }
     );
 
 
 // User login route
-router.post('/login', usersController.loginUser);
+router.post('/login',verifyUser, usersController.loginUser);
 
 module.exports = router;

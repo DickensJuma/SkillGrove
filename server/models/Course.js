@@ -10,12 +10,12 @@ const courseSchema = new mongoose.Schema({
     required: true,
   },
   instructor: {
-    type: String,
-    required: true,
+    type:  mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   content: {
-    type: String,
-    required: true,
+    type: Array,
+    default: [],
   },
 
   duration: {

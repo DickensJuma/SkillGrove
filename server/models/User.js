@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'instructor', 'admin'], // Adjust roles as needed
     default: 'user',
   },
+  members:{
+    type: Array,
+    default: [],
+  },
   coursesEnrolled: [
     {
       type: mongoose.Schema.Types.ObjectId,

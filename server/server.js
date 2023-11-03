@@ -27,7 +27,7 @@ mongoose
   });
 
 // Define routes
-app.get('/home', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Welcome Home!');
 }
 );

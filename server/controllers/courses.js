@@ -1,3 +1,4 @@
+const { uploadFileToS3 } = require('../config/aws');
 const { default: KafkaConfig } = require('../config/kafka');
 const Course = require('../models/Course');
 
@@ -45,14 +46,26 @@ exports.getAllCourses = (req, res) => {
 
 
 // Create a new course
-exports.createCourse = (req, res) => {
-  const { title, description, instructor, content } = req.body;
+exports.createCourse = async (req, res) => {
+  const { title, description, file ,  duration,price, category} = req.body;
+  console.log( req.body)
+
+  const instructor = req.user._id
+  
+
+  const s3FileUrl = await uploadFileToS3(file);
+
+  const courseContent =[]
+  courseContent.push(s3FileUrl)
 
   const newCourse = new Course({
     title,
     description,
     instructor,
-    content,
+    content: courseContent,
+    duration,
+    price,
+    category
   });
 
   newCourse
