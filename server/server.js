@@ -3,8 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv'); 
-
-
 dotenv.config();
 
 const app = express();
@@ -17,6 +15,7 @@ app.use(cors());
 
 // Connect to the MongoDB database
 const dbUrl = process.env.MONGO_URL; // Use the MongoDB URI from .env file
+console.log('MONGO_URL',dbUrl);
 mongoose
   .connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -33,7 +32,7 @@ app.get('/', (req, res) => {
 );
 const apiRoutes = require('./routes/api');
 const KafkaConfig = require('./config/kafka');
-app.use('/v1', apiRoutes);
+app.use('/api/v1', apiRoutes);
 
 
 const kafkaConfig = new KafkaConfig();
