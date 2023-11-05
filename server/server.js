@@ -30,9 +30,11 @@ app.get('/', (req, res) => {
   res.send('Welcome Home!');
 }
 );
+let environment = process.env.ENV;
 const apiRoutes = require('./routes/api');
 const KafkaConfig = require('./config/kafka');
-app.use('/api/v1', apiRoutes);
+let path_url = environment == "DEV" ? '/api/v1' : '/v1';
+app.use(path_url, apiRoutes);
 
 
 const kafkaConfig = new KafkaConfig();
@@ -42,8 +44,6 @@ const kafkaConfig = new KafkaConfig();
 
 var passport = require('passport');
 
-var userProfile;
- 
 app.use(require('express-session')({ secret: 'my secrtesss', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
