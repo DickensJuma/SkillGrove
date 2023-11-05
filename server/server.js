@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 );
 const apiRoutes = require('./routes/api');
 const KafkaConfig = require('./config/kafka');
-app.use('/api', apiRoutes);
+app.use('/v1', apiRoutes);
 
 
 const kafkaConfig = new KafkaConfig();
