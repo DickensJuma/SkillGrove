@@ -7,7 +7,7 @@ The SkillGrovePlatform is a web-based application that allows organizations to d
 ## Features
 
 - User Registration and Authentication
-- User Roles (User, Instructor, Admin)
+- User Roles (Student, Instructor, Admin)
 - Course Management
 - Interactive Course Content
 - User Enrollment in Courses

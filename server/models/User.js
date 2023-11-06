@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  phoneNumber: {
+    type: String,
+    trim: true,
+  },
   password: {
     type: String,
     required: true,
@@ -29,16 +33,49 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  title: {
+    type: String,
+    trim: true,
+  },
+  slug: {
+    type: String,
+    trim: true,
+  },
+  linkedinUrl: {
+    type: String,
+    trim: true,
+  },
+  facebookUrl: {
+    type: String,
+    trim: true,
+  },
+  pinterestUrl: {
+    type: String,
+    trim: true,
+  },
+  instagramUrl: {
+    type: String,
+    trim: true,
+  },
+  twitterHandle: {
+    type: String,
+    trim: true,
+  },
+  bio: {
+    type: String,
+    trim: true,
+  },
+
   dateOfBirth: {
     type: Date,
   },
   profilePicture: {
-    type: String, // URL to the profile picture
+    type: String, 
   },
   role: {
     type: String,
-    enum: ['user', 'instructor', 'admin'], // Adjust roles as needed
-    default: 'user',
+    enum: ['student', 'admin'], 
+    default: 'student',
   },
   members:{
     type: Array,
@@ -50,6 +87,20 @@ const userSchema = new mongoose.Schema({
       ref: 'Course',
     },
   ],
+  recentCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Course',
+    },
+  ],
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  blockedReason: {
+    type: String,
+
+  }
   // Add more fields for user preferences, settings, etc.
 });
 
@@ -81,3 +132,4 @@ userSchema.plugin(uniqueValidator, { message: 'This {PATH} is already taken.' })
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+

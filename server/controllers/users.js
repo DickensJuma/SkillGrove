@@ -3,79 +3,9 @@ const dotenv = require('dotenv');
 dotenv.config();
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const logger = require('../logger');
+const Instructor = require('../models/Instructor');
 
-// User registration
-exports.registerUser = (req, res) => {
- 
-  const { username, email, password , profile} = req.body;
-  if(!profile){
-
-  // Check if the username or email is already in use
-  User.findOne({ $or: [{ username }, { email }] })
-    .then((existingUser) => {
-      if (existingUser) {
-        return res.status(400).json({ success: false, message: 'Username or email already in use' });
-      }
-
-      // Create a new user
-      bcrypt.hash(password, 10, (hashError, hashedPassword) => {
-        if (hashError) {
-          return res.status(500).json({ success: false, message: 'Password hashing failed' });
-        }
-
-        const newUser = new User({ username, email, password: hashedPassword });
-        newUser
-          .save()
-          .then((user) => {
-            // Generate a JWT token for the registered user
-            const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' });
-            res.json({ success: true, message: 'User registered', token });
-          })
-          .catch((error) => {
-            res.status(400).json({ success: false, message: 'Registration failed', error: error.message });
-          });
-      });
-    })
-    .catch((error) => {
-      res.status(500).json({ success: false, message: 'User check failed', error: error.message });
-    });
-  }
-  // create google user
-  return res.json({ success: true, message: 'User registered', profile });
-
-
-};
-
-// User login
-exports.loginUser = (req, res) => {
-  const { username, password } = req.body;
-
-  // Find the user by username
-  User.findOne({ username })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({ success: false, message: 'Authentication failed. User not found.' });
-      }
-
-      // Check the password
-      bcrypt.compare(password, user.password, (compareError, isMatch) => {
-        if (compareError) {
-          return res.status(500).json({ success: false, message: 'Authentication failed', error: compareError.message });
-        }
-
-        if (!isMatch) {
-          return res.status(401).json({ success: false, message: 'Authentication failed. Wrong password.' });
-        }
-
-        // Generate a JWT token for the authenticated user
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' });
-        res.json({ success: true, message: 'Authentication successful', token });
-      });
-    })
-    .catch((error) => {
-      res.status(500).json({ success: false, message: 'Authentication failed', error: error.message });
-    });
-};
 
 
 // Get all users
@@ -102,6 +32,7 @@ exports.getUserById = (req, res) => {
       }
     })
     .catch((error) => {
+      logger.error('error', 'Error fetching user: ', error);
       res.status(500).json({ success: false, message: 'Error fetching user', error: error.message });
     });
 };
@@ -110,7 +41,48 @@ exports.getUserById = (req, res) => {
 
 exports.createUser = (req, res) => {
  
-  const { username, email, password, firstName, lastName } = req.body;
+  const { username, email, password, firstName, lastName, role } = req.body;
+
+  if(role === 'instructor'){
+    let { qualification, subjects, experience, skills } = req.body;
+    if(!qualification || !experience || !skills){
+      return res.status(400).json({ success: false, message: 'Please fill all fields' });
+    }
+// Check if the username or email is already in use
+               let excistingInstructor = Instructor.findOne({ $or: [{ username }, { email }] })
+                if(excistingInstructor){
+                  return res.status(400).json({ success: false, message: 'Username or email already in use' });
+                }
+                  // Create a new user if not already in use
+              bcrypt.hash(password, 10, (hashError, hashedPassword) => {
+              if (hashError) {
+                return res.status(500).json({ success: false, message: 'Password hashing failed' });
+              }
+
+                const newInstructor = new Instructor({
+                  username,
+                  firstName,
+                  lastName,
+                  password: hashedPassword,
+                  email,
+                  qualification,
+                  subjects,
+                  experience,
+                  skills,
+                });
+                newInstructor
+                  .save()
+                  .then((user) => {
+                    // Generate a JWT token for the registered user
+                    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '24h' });
+                    res.json({ success: true, message: 'User registered', token });
+                  })
+                  .catch((error) => {
+                    res.status(400).json({ success: false, message: 'Registration failed', error: error.message });
+                  });
+
+              });
+  }
 
   // Check if the username or email is already in use
   User.findOne({ $or: [{ username }, { email }] })
@@ -146,6 +118,7 @@ exports.createUser = (req, res) => {
       });
     })
     .catch((error) => {
+      logger.error('error', 'Error creating user: ', error);
       res.status(500).json({ success: false, message: 'User check failed', error: error.message });
     });
 };
@@ -164,6 +137,7 @@ exports.updateUser = (req, res) => {
       }
     })
     .catch((error) => {
+      logger.error('error', 'Error updating user: ', error);
       res.status(500).json({ success: false, message: 'Error updating user', error: error.message });
     });
 };
@@ -181,7 +155,31 @@ exports.deleteUser = (req, res) => {
       }
     })
     .catch((error) => {
+      logger.error('error', 'Error deleting user: ', error);
       res.status(500).json({ success: false, message: 'Error deleting user', error: error.message });
     });
 };
 
+// get all instructors
+exports.getAllInstructors = (req, res) => {
+  User.find({ role: 'instructor' })
+    .then((users) => {
+      res.json({ success: true, users });
+    })
+    .catch((error) => {
+      logger.error('error', 'Error fetching instructors: ', error);
+      res.status(500).json({ success: false, message: 'Error fetching instructors', error: error.message });
+    });
+};
+
+// get all students
+exports.getAllStudents = (req, res) => {
+  User.find({ role: 'student' })
+    .then((users) => {
+      res.json({ success: true, users });
+    })
+    .catch((error) => {
+      logger.error('error', 'Error fetching students: ', error);
+      res.status(500).json({ success: false, message: 'Error fetching students', error: error.message });
+    });
+};
